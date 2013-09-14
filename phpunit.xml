@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true">
+  <testsuites>
+    <testsuite name="SomeComponent">
+      <file>SomeComponentVariantAlphaTest.php</file>
+      <file>SomeComponentVariantBetaTest.php</file>
+      <file>SomeComponentVariantBetaGammaTest.php</file>
+    </testsuite>
+  </testsuites>
+</phpunit>
