@@ -1,11 +1,11 @@
-Simulate Contexts in PHPUnit
-============================
+Contexts in PHPUnit
+===================
 
 Having the possibility to extract coherent groups of tests into separate test cases helps organizing a suite of tests.
 
 ## Disclaimer
 
-The following approach of organizing tests with PHPUnit isn't meant to be the only way of test arrangements.
+The following approach of organizing tests with PHPUnit is neither meant to be the only nor the best way to arrange your tests.
 There are plenty of ways to achieve similar results, just by extracting test setups into helper methods and call these methods from you test class(es) for example.
 Originally the examples shown here were meant as a sort of proof of concept.
 
@@ -15,14 +15,14 @@ It's important to note that (nested) contexts are meant to primarily support tes
 ## Background
 
 As the number of tests for a particular CUT grows, you may realize that this fact hinders the overal readability of the test class.
-Either the line count grows, or your `setUp()` becomes more and more cluttered with arrangements and preparations to support all the different test methods.
+Either the line count grows unstoppable, or your `setUp()` method becomes more and more cluttered with arrangements and preparations to support all the different test methods.
 
 Having the possibility to group specific tests together not only helps alleviate the constant growth of your current test class, it also helps you to create cleaner test classes.
 Being able to group coherent test preparations and test executions allows smaller `setUp()` methods. And smaller methods is generally a good thing.
 
 ## Implementation
 
-The shown examples test an artificial class `SomeComponent`. Unfortunately, testing `SomeComponent` requires calls and examinations with different - but contiguous - test data.
+The shown examples test an artificial class `SomeComponent`. Unfortunately, testing `SomeComponent` requires calls and examinations with different - but contiguous - test variants.
 This contiguous test data can be centralized in different "contexts".
 
 ### Definition of "context"
@@ -37,10 +37,10 @@ As of today, PHPUnit doesn't support this concept directly. But there are ways t
 ## Examples
 
 The class `SomeComponent` is being test with three different groups of tests.
-There's a "Variant Alpha", "Variant Beta" and "Variant Beta Gamma" to represent to different groups. "Variant Beta Gamma" is a sub-variant of "Variant Beta".
+There's a "Variant Alpha", "Variant Beta" and "Variant Beta Gamma" to represent the different groups. "Variant Beta Gamma" is a sub-variant of "Variant Beta".
 
 Executing the examples is done via command `phpunit` directly in the directory.
-You should see the following output:
+You should see an output similiar to the following:
 
     PHPUnit 3.7.24 by Sebastian Bergmann.
 
@@ -79,9 +79,14 @@ You should see the following output:
 
 Not the most beautiful console output, but it'll do.
 
+The context class can set up arrangements needed for all tests needed of "Variant Alpha". Sharing these arrangements among all test classes of variant Alpha can involve having
+`public` or `protected` members that can later be used in the test methods.
+
+Nested contexts like in variant "Beta Gamma" require the manual wiring of `setUpBeforeClass()` calls in the hierarchy (i.e. calling `parent::setUpBeforeClass()`).
+
 The actual test classes conform to the convention of having the filename ending with `*Test.php`. 
 The classes inside these files however, do not inherit from `\PHPUnit_Framework_TestCase` as PHPUnit test classes normally do. 
-They inherit from a context class, e.g. `SomeComponentVariantAlphaContext`. Which itself inherits from `\PHPUnit_Framework_TestCase`.
+They inherit from their respective context class, e.g. `SomeComponentVariantAlphaContext`. Which itself inherits from `\PHPUnit_Framework_TestCase`.
 The context classes implements the method `setUpBeforeClass()` in order to make sure the context is intialized once per test class.
 The test class itself can have a `setUp()` method to prepare arrangements needed for every test method.
 
@@ -93,6 +98,6 @@ Right now I think it's easier to just specifiy the required context right where 
 ## Footnotes
 
 Having the test classes defined in a specific order in the configuration file `phpunit.xml` is done only for presentation purposes.
-It helps having a better output on the console after runnung the tests.
+It helps having a better output on the console when runnung the tests.
 
 Specifying an order for tests should be avoided in real world implementations.
